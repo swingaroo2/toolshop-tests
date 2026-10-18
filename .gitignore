@@ -4,10 +4,9 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
-/playwright/.auth/
 .env
-playwright/.auth
+.auth/
 
 # Other
 stories/
-TIMELOG.md
+NOTES.md
