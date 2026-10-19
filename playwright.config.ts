@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 import path from "path";
+import { AUTH_FILES } from "./tests/constants/auth-files";
 
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 
@@ -26,9 +27,23 @@ export default defineConfig({
       dependencies: ["setup"],
     },
     {
-      name: "ui",
-      testDir: "./tests/ui",
-      use: { ...devices["Desktop Chrome"], baseURL: process.env.UI_URL },
+      name: "ui-customer",
+      testDir: "./tests/ui/customer",
+      use: {
+        ...devices["Desktop Chrome"],
+        baseURL: process.env.UI_URL,
+        storageState: AUTH_FILES.customer,
+      },
+      dependencies: ["setup"],
+    },
+    {
+      name: "ui-admin",
+      testDir: "./tests/ui/admin",
+      use: {
+        ...devices["Desktop Chrome"],
+        baseURL: process.env.UI_URL,
+        storageState: AUTH_FILES.admin,
+      },
       dependencies: ["setup"],
     },
   ],
