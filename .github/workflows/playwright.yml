@@ -2,17 +2,12 @@ name: Playwright Tests
 on:
   push:
     branches: [main, master]
-    branches: [main, master]
   pull_request:
-    branches: [main, master]
     branches: [main, master]
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    env:
-      UI_URL: http://localhost:4200
-      API_URL: http://localhost:8091
     env:
       UI_URL: http://localhost:4200
       API_URL: http://localhost:8091
@@ -77,6 +72,13 @@ jobs:
         if: failure()
         working-directory: toolshop-app
         run: docker compose logs
+
+      - name: Show API error
+        if: failure()
+        working-directory: toolshop-app
+        run: |
+          curl --silent --show-error "$API_URL/products?page=1" | head -c 3000
+          docker compose exec -T laravel-api tail -n 60 storage/logs/laravel.log || true
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
