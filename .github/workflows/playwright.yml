@@ -78,7 +78,12 @@ jobs:
         working-directory: toolshop-app
         run: |
           curl --silent --show-error "$API_URL/products?page=1" | head -c 3000
-          docker compose exec -T laravel-api tail -n 60 storage/logs/laravel.log || true
+          curl --silent --include "$API_URL/products?page=1" | head -c 1500
+          docker compose exec -T laravel-api sh -c '
+            ps -o user,comm | grep php-fpm | head -n 3
+            ls -la storage storage/logs storage/framework
+            grep -h "ERROR" storage/logs/*.log | grep -v "toolshop.jobs" | tail -n 5
+          ' || true
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
