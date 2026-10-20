@@ -51,6 +51,10 @@ jobs:
           echo "Seeding failed after 30 attempts"
           exit 1
 
+      - name: Make Laravel storage writable
+        working-directory: toolshop-app
+        run: docker compose exec -T -u root laravel-api chown -R www-data:www-data storage bootstrap/cache
+
       - name: Wait for UI and API
         run: |
           for url in "$UI_URL" "$API_URL/products?page=1"; do
@@ -77,7 +81,6 @@ jobs:
         if: failure()
         working-directory: toolshop-app
         run: |
-          curl --silent --show-error "$API_URL/products?page=1" | head -c 3000
           curl --silent --include "$API_URL/products?page=1" | head -c 1500
           docker compose exec -T laravel-api sh -c '
             ps -o user,comm | grep php-fpm | head -n 3
